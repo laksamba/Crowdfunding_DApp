@@ -1,153 +1,168 @@
 import React, { useState } from "react";
+import { ethers } from "ethers";
+import { FundingFactoryAbi } from "../ContractAbi/ContractABI"; // ✅ Make sure this exports .abi
+import { toast } from "react-toastify";
+
+const FACTORY_ADDRESS = "0xB0Ac99f1181a069E1293d76468aa3211db1a8B35"; // ✅ Replace this
 
 const CreateCampaign = () => {
   const [errors, setErrors] = useState({});
-  const [formData, setFormData] = useState({
+  const [newCampaign, setNewCampaign] = useState({
     title: "",
     description: "",
     address: "",
-    goal: " ",
+    goal: "",
     duration: "",
     image: null,
   });
 
+  // Handle input change
   const handleChange = (e) => {
     const { name, value, files } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: files ? files[0] : value }));
-    setErrors((prev)=>({...prev, [name]: ""}))
+    setNewCampaign((prev) => ({ ...prev, [name]: files ? files[0] : value }));
+    setErrors((prev) => ({ ...prev, [name]: "" }));
   };
 
+  // Validate form inputs
   const validateForm = () => {
     const newErrors = {};
-    if (!formData.title) newErrors.title = "Title is required";
-    if (!formData.description) newErrors.description = "Description is required";
-    if (!formData.address) newErrors.address = "Beneficiary account is required";
-    if (!formData.goal || formData.goal <= 0) newErrors.goal = "Valid goal amount is required";
-    if (!formData.duration || formData.duration <= 0) newErrors.duration = "Valid duration is required";
+    if (!newCampaign.title) newErrors.title = "Title is required";
+    if (!newCampaign.description) newErrors.description = "Description is required";
+    if (!newCampaign.address) newErrors.address = "Beneficiary address is required";
+    if (!newCampaign.goal || newCampaign.goal <= 0) newErrors.goal = "Valid goal amount is required";
+    if (!newCampaign.duration || newCampaign.duration <= 0)
+      newErrors.duration = "Valid duration is required";
     return newErrors;
   };
 
+ 
+  const getContract = async () => {
+    if (!window.ethereum) {
+      toast.error("MetaMask not found!");
+      return null;
+    }
 
-     const handleSubmit = (e)=>{
-      e.preventDefault();
-      const validationErrors = validateForm();
-      if(Object.keys(validationErrors).length >0){
-          setErrors(validationErrors);
-          return;
+    await window.ethereum.request({ method: "eth_requestAccounts" });
+    const provider = new ethers.BrowserProvider(window.ethereum);
+    const signer = await provider.getSigner();
+    return new ethers.Contract(FACTORY_ADDRESS, FundingFactoryAbi, signer);
+  };
+
+  
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const validationErrors = validateForm();
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+      return;
+    }
+
+    try {
+      const { title, description, address, goal, duration } = newCampaign;
+
+      if (!ethers.isAddress(address)) {
+        toast.error("Invalid beneficiary address");
+        return;
       }
 
-    //   actual api call logic
-     console.log("Form submitted:", {
-      ...formData,
-      image: formData.image ? formData.image.name : null,
-    });
+      const factoryContract = await getContract();
+      if (!factoryContract) return;
 
-    // reset formData
-     setFormData({
-      title: "",
-      description: "",
-      address: "",
-      goal: "",
-      duration: "",
-      image: null,
-    });
-     }
+      const tx = await factoryContract.createCampaign(
+        title,
+        description,
+        address,
+        ethers.parseEther(goal.toString()),
+        duration
+      );
+
+      toast.info("Creating campaign... please wait ⏳");
+      await tx.wait();
+      toast.success("✅ Campaign created successfully!");
+
+      setNewCampaign({
+        title: "",
+        description: "",
+        address: "",
+        goal: "",
+        duration: "",
+        image: null,
+      });
+      document.querySelector('input[name="image"]').value = "";
+    } catch (error) {
+      console.error(error);
+      toast.error("Error creating campaign: " + (error.message || "Transaction failed"));
+    }
+  };
 
   return (
-    <div className="flex flex-col justify-center items-center min-h-screen bg-gray-100 p-4 ">
-      <h1 className="p-8 m-5 text-center text-gray-700 "><span className="text-4xl font-bold block text-transparent bg-clip-text bg-gradient-to-r from-green-600 to-blue-600 pb-1 ">Create New Campaign</span> <br />You’re not just creating a campaign — you’re starting a movement.</h1>
+    <div className="flex flex-col justify-center items-center min-h-screen bg-gray-100 p-4">
+      <h1 className="p-8 m-5 text-center text-gray-700">
+        <span className="text-4xl font-bold block text-transparent bg-clip-text bg-gradient-to-r from-green-600 to-blue-600 pb-1">
+          Create New Campaign
+        </span>
+        <br />
+        You’re not just creating a campaign — you’re starting a movement.
+      </h1>
+
       <div className="w-full max-w-md bg-white p-6 rounded-lg shadow-md">
         <div className="flex flex-col gap-4">
-          <div>
-            <label htmlFor="title" className="block text-sm font-medium text-gray-700">
-              Title
-            </label>
-            <input
-              type="text"
-              name="title"
-              value={formData.title}
-              onChange={handleChange}
-              placeholder="Enter Purpose of Raising Fund"
-              className={`mt-1 block w-full p-2 border rounded-md shadow-sm focus:ring-green-500 focus:border-green-500 ${
-                errors.title ? "border-red-500" : "border-gray-300"
-              }`}
-            />
-            {errors.title && <p className="text-red-500 text-xs mt-1">{errors.title}</p>}
-          </div>
+          
+          {["title", "address", "goal", "duration", "description"].map((field) => (
+            <div key={field}>
+              <label
+                htmlFor={field}
+                className="block text-sm font-medium text-gray-700 capitalize"
+              >
+                {field === "address"
+                  ? "Beneficiary Account"
+                  : field === "goal"
+                  ? "Goal (ETH)"
+                  : field === "duration"
+                  ? "Duration (Days)"
+                  : field.charAt(0).toUpperCase() + field.slice(1)}
+              </label>
 
-         
-
-          <div>
-            <label htmlFor="address" className="block text-sm font-medium text-gray-700">
-              Beneficiary Account
-            </label>
-            <input
-              type="text"
-              name="address"
-              value={formData.address}
-              onChange={handleChange}
-              placeholder="Enter Receiver Account"
-              className={`mt-1 block w-full p-2 border rounded-md shadow-sm focus:ring-green-500 focus:border-green-500 ${
-                errors.address ? "border-red-500" : "border-gray-300"
-              }`}
-            />
-            {errors.address && <p className="text-red-500 text-xs mt-1">{errors.address}</p>}
-          </div>
-
-          <div>
-            <label htmlFor="goal" className="block text-sm font-medium text-gray-700">
-              Goal ($)
-            </label>
-            <input
-              type="number"
-              name="goal"
-              value={formData.goal}
-              onChange={handleChange}
-              placeholder="Enter Amount Needed"
-              className={`mt-1 block w-full p-2 border rounded-md shadow-sm focus:ring-green-500 focus:border-green-500 ${
-                errors.goal ? "border-red-500" : "border-gray-300"
-              }`}
-            />
-            {errors.goal && <p className="text-red-500 text-xs mt-1">{errors.goal}</p>}
-          </div>
+              {field === "description" ? (
+                <textarea
+                  name={field}
+                  value={newCampaign[field]}
+                  onChange={handleChange}
+                  placeholder="Enter detailed information..."
+                  className={`mt-1 block w-full p-2 border rounded-md shadow-sm focus:ring-green-500 focus:border-green-500 ${
+                    errors[field] ? "border-red-500" : "border-gray-300"
+                  }`}
+                  rows="4"
+                />
+              ) : (
+                <input
+                  type={field === "goal" || field === "duration" ? "number" : "text"}
+                  name={field}
+                  value={newCampaign[field]}
+                  onChange={handleChange}
+                  placeholder={
+                    field === "goal"
+                      ? "Enter amount in ETH"
+                      : field === "duration"
+                      ? "Enter campaign duration in days"
+                      : `Enter ${field}`
+                  }
+                  className={`mt-1 block w-full p-2 border rounded-md shadow-sm focus:ring-green-500 focus:border-green-500 ${
+                    errors[field] ? "border-red-500" : "border-gray-300"
+                  }`}
+                />
+              )}
+              {errors[field] && (
+                <p className="text-red-500 text-xs mt-1">{errors[field]}</p>
+              )}
+            </div>
+          ))}
 
           <div>
-            <label htmlFor="duration" className="block text-sm font-medium text-gray-700">
-              Duration (Days)
-            </label>
-            <input
-              type="number"
-              name="duration"
-              value={formData.duration}
-              onChange={handleChange}
-              placeholder="Enter Days to Run Campaign"
-              className={`mt-1 block w-full p-2 border rounded-md shadow-sm focus:ring-green-500 focus:border-green-500 ${
-                errors.duration ? "border-red-500" : "border-gray-300"
-              }`}
-            />
-            {errors.duration && <p className="text-red-500 text-xs mt-1">{errors.duration}</p>}
-          </div>
-
-           <div>
-            <label htmlFor="description" className="block text-sm font-medium text-gray-700">
-              Description
-            </label>
-            <textarea
-              name="description"
-              id="description"
-              value={formData.description}
-              onChange={handleChange}
-              placeholder="Enter Detailed Information..."
-              className={`mt-1 block w-full p-2 border rounded-md shadow-sm focus:ring-green-500 focus:border-green-500 ${
-                errors.description ? "border-red-500" : "border-gray-300"
-              }`}
-              rows="4"
-            />
-            {errors.description && <p className="text-red-500 text-xs mt-1">{errors.description}</p>}
-          </div>
-
-          <div>
-            <label htmlFor="image" className="block text-sm font-medium text-gray-700">
+            <label
+              htmlFor="image"
+              className="block text-sm font-medium text-gray-700"
+            >
               Image
             </label>
             <input

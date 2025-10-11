@@ -5,6 +5,7 @@ import HomePage from "./pages/HomePage.jsx";
 import CreateCampaign from "./pages/CreateCampaign.jsx";
 import Navbar from "./components/Navbar.jsx";
 import Campaigns from "./pages/Campaigns.jsx";
+import { ToastContainer } from "react-toastify";
 
 function App() {
   return (
@@ -12,6 +13,7 @@ function App() {
     
   
         <Navbar/>
+        <ToastContainer />
       <div className="md:pt-18 pt-24">
         <Routes>
         

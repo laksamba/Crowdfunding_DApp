@@ -99,21 +99,21 @@ const HomePage = () => {
       <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-blue-600 to-green-600 text-white">
         <div className="max-w-7xl mx-auto text-center">
           <h2 className="text-3xl md:text-4xl font-bold mb-6">Built on Trust</h2>
-          <p className="text-xl mb-12 max-w-3xl mx-auto opacity-90">
+          <p className="text-xl mb-12 max-w-3xl mx-auto ">
             Powered by Ethereum blockchain,  smart contracts, and community governance.
           </p>
           <div className="grid md:grid-cols-3 gap-8 mb-12">
             <div>
               <h3 className="text-2xl font-semibold mb-2">Ethereum</h3>
-              <p className="opacity-75">Secure, decentralized blockchain infrastructure</p>
+              <p >Secure, decentralized blockchain infrastructure</p>
             </div>
             <div>
               <h3 className="text-2xl font-semibold mb-2">Audited</h3>
-              <p className="opacity-75">Smart contracts verified by devs</p>
+              <p className="">Smart contracts verified by devs</p>
             </div>
             <div>
               <h3 className="text-2xl font-semibold mb-2">Community</h3>
-              <p className="opacity-75">Governed by donors and campaign creators</p>
+              <p >Governed by donors and campaign creators</p>
             </div>
           </div>
           {/* <div className="flex justify-center space-x-6 text-sm opacity-75">
