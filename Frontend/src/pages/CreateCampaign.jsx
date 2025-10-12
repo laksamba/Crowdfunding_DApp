@@ -98,7 +98,7 @@ const CreateCampaign = () => {
   return (
     <div className="flex flex-col justify-center items-center min-h-screen bg-gray-100 p-4">
       <h1 className="p-8 m-5 text-center text-gray-700">
-        <span className="text-4xl font-bold block text-transparent bg-clip-text bg-gradient-to-r from-green-600 to-blue-600 pb-1">
+        <span className="text-5xl font-caveat font-bold block text-transparent bg-clip-text bg-gradient-to-r from-green-600 to-blue-600 pb-1">
           Create New Campaign
         </span>
         <br />
