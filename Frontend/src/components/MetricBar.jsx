@@ -1,23 +1,40 @@
 import React from "react";
 
-const MetricBar = ({goal, raised}) => {
-    const percentage = Math.min((raised/goal)*100, 100);
+const MetricBar = ({ goal, raised }) => {
+  const percentage = goal > 0 ? Math.min((raised / goal) * 100, 100) : 0;
+
   return (
-    <div className="w-full max-w-md mx-auto py-4 bg-white px-2 ">
-      <div className="mb-4">
-        <h2 className="text-xl font-semibold text-gray-800">Fundraising Progress</h2>
-        <p className="text-sm text-gray-600">
-          Raised:${raised.toString()}of ${goal.toString()} goal
-        </p>
+    <div className="w-full pt-4">
+      <div className="flex justify-between items-center mb-2">
+        <h2 className="text-sm font-semibold text-gray-700 uppercase tracking-wide">
+          Progress
+        </h2>
+        <span className="text-xs text-gray-500">
+          {percentage.toFixed(1)}%
+        </span>
       </div>
-      <div className="w-full bg-gray-200 rounded-full h-4 overflow-hidden">
+
+      {/* Progress Bar */}
+      <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden shadow-inner">
         <div
-          className="bg-green-600 h-full rounded-b-full transition-all duration-500"
+          className="h-full bg-gradient-to-r from-green-500 via-emerald-500 to-teal-500 transition-all duration-700 ease-out"
           style={{ width: `${percentage}%` }}
         ></div>
       </div>
-      <div className="mt-2 text-sm text-gray-600">
-        {percentage.toFixed(1)}% of goal reached
+
+      <div className="mt-2 flex justify-between text-xs text-gray-600 font-medium">
+        <p>
+          Raised:{" "}
+          <span className="text-green-700 font-semibold">
+            {raised} ETH
+          </span>
+        </p>
+        <p>
+          Goal:{" "}
+          <span className="text-gray-800 font-semibold">
+            {goal} ETH
+          </span>
+        </p>
       </div>
     </div>
   );

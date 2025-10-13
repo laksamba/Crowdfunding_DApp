@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import { ethers } from "ethers";
-import { FundingFactoryAbi } from "../ContractAbi/ContractABI"; // ✅ Make sure this exports .abi
+import { FundingFactoryAbi } from "../ContractAbi/ContractABI"; 
 import { toast } from "react-toastify";
 
-const FACTORY_ADDRESS = "0xB0Ac99f1181a069E1293d76468aa3211db1a8B35"; // ✅ Replace this
+const FACTORY_ADDRESS = "0xB0Ac99f1181a069E1293d76468aa3211db1a8B35";
 
 const CreateCampaign = () => {
   const [errors, setErrors] = useState({});

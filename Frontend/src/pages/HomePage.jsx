@@ -8,13 +8,13 @@ const HomePage = () => {
     <div className="">
       <section className="pt-24 pb-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
         <div className="text-center">
-          <h1 className="text-4xl md:text-6xl font-bold text-gray-900 mb-6">
+          <h1 className="text-4xl md:text-7xl font-caveat font-extrabold text-gray-900 mb-6">
             Empowering Communities Through
             <span className="block text-transparent bg-clip-text bg-gradient-to-r from-green-600 to-blue-600">
               Transparent Blockchain Fundraising
             </span>
           </h1>
-          <p className="text-xl md:text-2xl text-gray-600 mb-8 max-w-3xl mx-auto leading-relaxed">
+          <p className="text-xl  md:text-2xl text-gray-600 mb-8 max-w-3xl mx-auto leading-relaxed">
             Sahyogee is a decentralized platform that combines the power of
             blockchain with the spirit of collective giving. Every donation is
             transparent, secure, and directly impacts lives.
@@ -98,7 +98,7 @@ const HomePage = () => {
        {/* Blockchain Trust Section */}
       <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-blue-600 to-green-600 text-white">
         <div className="max-w-7xl mx-auto text-center">
-          <h2 className="text-3xl md:text-4xl font-bold mb-6">Built on Trust</h2>
+          <h2 className="text-3xl md:text-4xl font-caveat  font-black mb-6">Built on Trust</h2>
           <p className="text-xl mb-12 max-w-3xl mx-auto ">
             Powered by Ethereum blockchain,  smart contracts, and community governance.
           </p>
