@@ -10,6 +10,7 @@ contract CrowdFunding is Ownable {
     uint256 public goal;
     uint256 public deadline;
     uint256 public totalRaised;
+    string public image;
     bool public ended;
 
     mapping(address => uint256) public donations;
@@ -34,12 +35,14 @@ contract CrowdFunding is Ownable {
         string memory _description,
         address _beneficiary,
         uint256 _goal,
-        uint256 _durationInDays
+        uint256 _durationInDays,
+        string memory _image
     ) Ownable(msg.sender) {
         title = _title;
         description = _description;
         beneficiary = _beneficiary;
         goal = _goal;
+         image = _image;
         deadline = block.timestamp + (_durationInDays * 1 days);
     }
 
