@@ -3,7 +3,7 @@ import { ethers } from "ethers";
 import { FundingFactoryAbi } from "../ContractAbi/ContractABI"; 
 import { toast } from "react-toastify";
 
-const FACTORY_ADDRESS = "0xB0Ac99f1181a069E1293d76468aa3211db1a8B35";
+const FACTORY_ADDRESS = "0x784738eEE43f82eAE9124B63CB99e99AB25bdbAB";
 
 const CreateCampaign = () => {
   const [errors, setErrors] = useState({});
@@ -48,52 +48,81 @@ const CreateCampaign = () => {
     return new ethers.Contract(FACTORY_ADDRESS, FundingFactoryAbi, signer);
   };
 
+
+  const uploadToCloudinary = async (file) => {
+  const formData = new FormData();
+  formData.append("file", file);
+  formData.append("upload_preset", "CrowdFunding"); 
+  formData.append("cloud_name", "daluvqpox"); 
+
+  const res = await fetch(
+    `https://api.cloudinary.com/v1_1/daluvqpox/image/upload`,
+    {
+      method: "POST",
+      body: formData,
+    }
+  );
+
+  const data = await res.json();
+  return data.secure_url; 
+};
+
+
   
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    const validationErrors = validateForm();
-    if (Object.keys(validationErrors).length > 0) {
-      setErrors(validationErrors);
+ const handleSubmit = async (e) => {
+  e.preventDefault();
+  const validationErrors = validateForm();
+  if (Object.keys(validationErrors).length > 0) {
+    setErrors(validationErrors);
+    return;
+  }
+
+  try {
+    const { title, description, address, goal, duration, image } = newCampaign;
+
+    if (!ethers.isAddress(address)) {
+      toast.error("Invalid beneficiary address");
       return;
     }
 
-    try {
-      const { title, description, address, goal, duration } = newCampaign;
+   
+    toast.info("Uploading image...");
+    const imageUrl = await uploadToCloudinary(image);
 
-      if (!ethers.isAddress(address)) {
-        toast.error("Invalid beneficiary address");
-        return;
-      }
+   
+    const factoryContract = await getContract();
+    if (!factoryContract) return;
 
-      const factoryContract = await getContract();
-      if (!factoryContract) return;
+    
 
-      const tx = await factoryContract.createCampaign(
-        title,
-        description,
-        address,
-        ethers.parseEther(goal.toString()),
-        duration
-      );
+    const tx = await factoryContract.createCampaign(
+      title,
+      description,
+      address,
+      ethers.parseEther(goal.toString()),
+      duration,
+      imageUrl 
+    );
 
-      toast.info("Creating campaign... please wait ⏳");
-      await tx.wait();
-      toast.success("✅ Campaign created successfully!");
+    toast.info("Creating campaign... please wait ⏳");
+    await tx.wait();
+    toast.success("✅ Campaign created successfully!");
 
-      setNewCampaign({
-        title: "",
-        description: "",
-        address: "",
-        goal: "",
-        duration: "",
-        image: null,
-      });
-      document.querySelector('input[name="image"]').value = "";
-    } catch (error) {
-      console.error(error);
-      toast.error("Error creating campaign: " + (error.message || "Transaction failed"));
-    }
-  };
+    setNewCampaign({
+      title: "",
+      description: "",
+      address: "",
+      goal: "",
+      duration: "",
+      image: null,
+    });
+    document.querySelector('input[name="image"]').value = "";
+  } catch (error) {
+    console.error(error);
+    toast.error("Error creating campaign: " + (error.message || "Transaction failed"));
+  }
+};
+
 
   return (
     <div className="flex flex-col justify-center items-center min-h-screen bg-gray-100 p-4">

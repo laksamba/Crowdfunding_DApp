@@ -2,10 +2,11 @@ import React, { useEffect, useState } from "react";
 import { ethers } from "ethers";
 import { FundingFactoryAbi, CrowdFundingAbi } from "../ContractAbi/ContractABI";
 import MetricBar from "./MetricBar";
-import Donate from "./Donate"; 
-import image from "./../assets/help.png";
+import Donate from "./Donate";
+import Help from "./../assets/help.png";
+import EndCampaign from "./EndCampaigns";
 
-const FACTORY_ADDRESS = "0xB0Ac99f1181a069E1293d76468aa3211db1a8B35";
+const FACTORY_ADDRESS = "0x784738eEE43f82eAE9124B63CB99e99AB25bdbAB";
 
 const Donationcard = () => {
   const [campaigns, setCampaigns] = useState([]);
@@ -15,86 +16,98 @@ const Donationcard = () => {
   const [userAddress, setUserAddress] = useState(null);
 
   const fetchCampaigns = async () => {
-    try {
-      if (!window.ethereum) {
-        alert("Please install MetaMask!");
-        return;
-      }
-
-      setLoading(true);
-
-      const providerInstance = new ethers.BrowserProvider(window.ethereum);
-      const signerInstance = await providerInstance.getSigner();
-      const userAddr = await signerInstance.getAddress();
-
-      setProvider(providerInstance);
-      setSigner(signerInstance);
-      setUserAddress(userAddr);
-
-      const factory = new ethers.Contract(
-        FACTORY_ADDRESS,
-        FundingFactoryAbi,
-        signerInstance
-      );
-
-      const campaignAddresses = await factory.getCampaigns();
-      const uniqueAddresses = [
-        ...new Set(campaignAddresses.map((addr) => addr.toLowerCase())),
-      ];
-
-      const campaignsData = await Promise.all(
-        uniqueAddresses.map(async (addr) => {
-          const campaign = new ethers.Contract(
-            addr,
-            CrowdFundingAbi,
-            signerInstance
-          );
-          const [
-            title,
-            description,
-            beneficiary,
-            goal,
-            totalRaised,
-            deadline,
-            ended,
-          ] = await Promise.all([
-            campaign.title(),
-            campaign.description(),
-            campaign.beneficiary(),
-            campaign.goal(),
-            campaign.totalRaised(),
-            campaign.deadline(),
-            campaign.ended(),
-          ]);
-
-          const currentTime = Math.floor(Date.now() / 1000);
-          const remainingSeconds = Number(deadline) - currentTime;
-          const remainingDays =
-            remainingSeconds > 0
-              ? Math.ceil(remainingSeconds / (60 * 60 * 24))
-              : 0;
-
-          return {
-            address: addr,
-            title,
-            description,
-            beneficiary,
-            goal: Number(ethers.formatEther(goal)),
-            raisedAmount: Number(ethers.formatEther(totalRaised)),
-            deadline: new Date(Number(deadline) * 1000).toLocaleDateString(),
-            remainingDays,
-            ended,
-          };
-        })
-      );
-
-      setCampaigns(campaignsData);
-    } catch (err) {
-      console.error("❌ Error fetching campaigns:", err);
-    } finally {
-      setLoading(false);
+  try {
+    if (!window.ethereum) {
+      alert("Please install MetaMask!");
+      return;
     }
-  };
+
+    setLoading(true);
+
+    const providerInstance = new ethers.BrowserProvider(window.ethereum);
+    const signerInstance = await providerInstance.getSigner();
+    const userAddr = await signerInstance.getAddress();
+
+    setProvider(providerInstance);
+    setSigner(signerInstance);
+    setUserAddress(userAddr);
+
+    const factory = new ethers.Contract(
+      FACTORY_ADDRESS,
+      FundingFactoryAbi,
+      signerInstance
+    );
+
+    const campaignAddresses = await factory.getCampaigns();
+    const uniqueAddresses = [
+      ...new Set(campaignAddresses.map((addr) => addr.toLowerCase())),
+    ];
+
+    const campaignsData = await Promise.all(
+      uniqueAddresses.map(async (addr) => {
+        const campaign = new ethers.Contract(
+          addr,
+          CrowdFundingAbi,
+          signerInstance
+        );
+        const [
+          title,
+          description,
+          beneficiary,
+          goal,
+          totalRaised,
+          deadline,
+          ended,
+          image,
+          balance,
+        ] = await Promise.all([
+          campaign.title(),
+          campaign.description(),
+          campaign.beneficiary(),
+          campaign.goal(),
+          campaign.totalRaised(),
+          campaign.deadline(),
+          campaign.ended(),
+          campaign.image(),
+          campaign.getBalance(), 
+        ]);
+
+        const currentTime = Math.floor(Date.now() / 1000);
+        const remainingSeconds = Number(deadline) - currentTime;
+        const remainingDays =
+          remainingSeconds > 0
+            ? Math.ceil(remainingSeconds / (60 * 60 * 24))
+            : 0;
+
+        return {
+          address: addr,
+          title,
+          description,
+          beneficiary,
+          goal: Number(ethers.formatEther(goal)),
+          raisedAmount: Number(ethers.formatEther(totalRaised)),
+          balance: Number(ethers.formatEther(balance)), // store balance
+          deadline: new Date(Number(deadline) * 1000).toLocaleDateString(),
+          remainingDays,
+          ended,
+          image,
+        };
+      })
+    );
+
+    // Filter out campaigns that are ended and balance is 0
+    const visibleCampaigns = campaignsData.filter(
+      (c) => !(c.ended && c.balance === 0)
+    );
+
+    setCampaigns(visibleCampaigns);
+  } catch (err) {
+    console.error("❌ Error fetching campaigns:", err);
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   useEffect(() => {
     fetchCampaigns();
@@ -127,7 +140,7 @@ const Donationcard = () => {
             className="p-4 shadow-lg rounded-xl bg-white hover:shadow-2xl transition-all"
           >
             <img
-              src={image}
+              src={c.image || Help}
               alt={c.title}
               className="h-48 w-full object-cover rounded-lg"
             />
@@ -197,7 +210,14 @@ const Donationcard = () => {
                   </p>
                 </div>
 
-                {/* Beneficiary spans full width */}
+                <div>
+                  <EndCampaign
+                    campaignAddress={c.address}
+                    provider={provider}
+                    signer={signer}
+                  />
+                </div>
+
                 <div className="col-span-2 mt-2">
                   <span className="font-medium text-gray-500">
                     Beneficiary:

@@ -1,7 +1,5 @@
 import React, { useState } from "react";
 import logo from "./../assets/TLogo.png";
-import WalletConnect from "./WalletConnect";
-// import { connectWallet } from "../wallet/walletConnect";
 
 const Navbar = () => {
   const [address, setAddress] = useState("");
@@ -18,7 +16,7 @@ const Navbar = () => {
       </a>
       <div>
 
-        <WalletConnect/>
+        <button  className="bg-emerald-600 text-white px-6 py-3 rounded-lg hover:bg-emerald-500"><a href="campaigns">Donate Now</a></button>
       </div>
     </nav>
   );

@@ -58,7 +58,7 @@ const HomePage = () => {
               <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
                 <span className="text-2xl font-bold text-green-600">1</span>
               </div>
-              <h3 className="text-xl font-semibold mb-3 text-center">
+              <h3 className="text-2xl font-caveat   font-bold mb-3 text-center">
                 Create Campaign
               </h3>
               <p className="text-gray-600 text-center">
@@ -70,7 +70,7 @@ const HomePage = () => {
               <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
                 <span className="text-2xl font-bold text-green-600">2</span>
               </div>
-              <h3 className="text-xl font-semibold mb-3 text-center">
+              <h3 className="text-2xl font-caveat   font-bold mb-3 text-center">
                 Receive Donations
               </h3>
               <p className="text-gray-600 text-center">
@@ -82,12 +82,11 @@ const HomePage = () => {
               <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
                 <span className="text-2xl font-bold text-green-600">3</span>
               </div>
-              <h3 className="text-xl font-semibold mb-3 text-center">
+              <h3 className="text-2xl font-caveat   font-bold mb-3 text-center">
                 Get Funds
               </h3>
               <p className="text-gray-600 text-center">
-                Smart contract automatically releases funds when goals are met.
-                No delays, no middlemen.
+                Funds are directly accessible to the beneficiary — no delays, no middlemen. The beneficiary can also end the campaign anytime when needed
               </p>
             </div>
           </div>

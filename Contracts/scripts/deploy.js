@@ -27,3 +27,13 @@ main().catch((error) => {
 // Deploying contracts with the account: 0xbF47332b3d70C4d15968Efe1f865a66A5c14F5AA
 // Deployer balance: 52543206594445848
 // ✅ CrowdFundingFactory deployed to: 0xa580e23F28538AC750608F98f1C09D689e6c67aB
+
+
+
+// Deploying contracts with the account: 0xbF47332b3d70C4d15968Efe1f865a66A5c14F5AA
+// Deployer balance: 50131275532671628
+// ✅ CrowdFundingFactory deployed to: 0xd34A7f7adC3b5f4B88bC75440BAbB92203D6618B
+
+// Deploying contracts with the account: 0xbF47332b3d70C4d15968Efe1f865a66A5c14F5AA
+// Deployer balance: 46940081051818795
+// ✅ CrowdFundingFactory deployed to: 0x784738eEE43f82eAE9124B63CB99e99AB25bdbAB

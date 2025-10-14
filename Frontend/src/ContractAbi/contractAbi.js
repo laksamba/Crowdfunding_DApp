@@ -19,6 +19,12 @@
           "internalType": "address",
           "name": "beneficiary",
           "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "image",
+          "type": "string"
         }
       ],
       "name": "campaignCreated",
@@ -69,6 +75,11 @@
           "internalType": "uint256",
           "name": "_durationInDays",
           "type": "uint256"
+        },
+        {
+          "internalType": "string",
+          "name": "_image",
+          "type": "string"
         }
       ],
       "name": "createCampaign",
@@ -97,7 +108,6 @@
     }
   ]
 
-
   export const CrowdFundingAbi =  [
     {
       "inputs": [
@@ -125,6 +135,11 @@
           "internalType": "uint256",
           "name": "_durationInDays",
           "type": "uint256"
+        },
+        {
+          "internalType": "string",
+          "name": "_image",
+          "type": "string"
         }
       ],
       "stateMutability": "nonpayable",
@@ -371,6 +386,19 @@
     },
     {
       "inputs": [],
+      "name": "image",
+      "outputs": [
+        {
+          "internalType": "string",
+          "name": "",
+          "type": "string"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
       "name": "owner",
       "outputs": [
         {
@@ -439,5 +467,5 @@
       "stateMutability": "payable",
       "type": "receive"
     }
-  ];
+  ]
  

@@ -58,7 +58,7 @@ contract CrowdFunding is Ownable {
     // beneficiary withdraws funds
     function withdraw() public campaignEnded {
         require(msg.sender == beneficiary, "Only beneficiary can withdraw");
-        require(!ended, "Campaign already ended");
+        // require(!ended, "Campaign already ended");
 
         uint256 amount = address(this).balance;
         require(amount > 0, "No funds to withdraw");
@@ -80,10 +80,13 @@ contract CrowdFunding is Ownable {
     }
 
     // emergency; owner can end early if needed 
-    function endCampaign() public onlyOwner {
-        ended = true;
-        emit CampaignEnded(totalRaised);
-    }
+    function endCampaign() public {
+    require(msg.sender == beneficiary, "Only beneficiary can end the campaign");
+    require(!ended, "Campaign already ended");
+    ended = true;
+    emit CampaignEnded(totalRaised);
+}
+
 
     // receive ETH fallback 
     receive() external payable {
