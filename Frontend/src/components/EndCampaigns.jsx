@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { ethers } from "ethers";
 import { toast } from "react-toastify";
-import { CrowdFundingAbi } from "../ContractAbi/ContractABI";
+import { CrowdFundingAbi } from "../ContractAbi/contractAbi.js";
 
 const EndCampaign = ({ campaignAddress, signer }) => {
   const endCampaign = async () => {

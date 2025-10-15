@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { ethers } from "ethers";
-import { FundingFactoryAbi, CrowdFundingAbi } from "../ContractAbi/ContractABI";
+import { FundingFactoryAbi, CrowdFundingAbi } from "../ContractAbi/contractAbi.js";
 import MetricBar from "./MetricBar";
 import Donate from "./Donate";
 import Help from "./../assets/help.png";
