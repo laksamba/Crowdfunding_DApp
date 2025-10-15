@@ -96,9 +96,18 @@ const Donationcard = () => {
     );
 
     // Filter out campaigns that are ended and balance is 0
-    const visibleCampaigns = campaignsData.filter(
-      (c) => !(c.ended && c.balance === 0)
-    );
+ const visibleCampaigns = campaignsData.filter((c) => {
+  const isPastDeadline = c.remainingDays <= 0;
+  const isBeneficiary = userAddr.toLowerCase() === c.beneficiary.toLowerCase();
+
+  // Hide campaigns that are past the deadline unless user is the beneficiary
+  // Also hide those that are ended and have zero balance
+  if (isPastDeadline && !isBeneficiary) return false;
+  if (c.ended && c.balance === 0) return false;
+
+  return true;
+});
+
 
     setCampaigns(visibleCampaigns);
   } catch (err) {
