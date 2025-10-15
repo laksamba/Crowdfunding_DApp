@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { ethers } from "ethers";
-import { FundingFactoryAbi } from "../ContractAbi/ContractABI"; 
+import { FundingFactoryAbi } from "../ContractAbi/contractAbi.js"; 
 import { toast } from "react-toastify";
 
 const FACTORY_ADDRESS = "0x784738eEE43f82eAE9124B63CB99e99AB25bdbAB";
